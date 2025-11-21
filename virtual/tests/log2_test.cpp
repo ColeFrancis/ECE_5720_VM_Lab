@@ -1,11 +1,13 @@
+#include <iostream>
+
 int log2(unsigned int num) {
   if (num == 0) {
     return -1;
   }
 
-  int count;
-  for (count = 0; count > 1; count++) {
-    num >>= 1;
+  int count = 0;
+  for (; num > 1; num >>= 1) {
+    count++;
   }
 
   return count;
@@ -24,8 +26,18 @@ int main(){
         3, 3, 3, 3, 3, 4, 4, 4, 4, 4,
         4, 4, 5, 5, 5, 5, 5, 6, 6, 6,
         6, 6, 6, 7, 7, 7, 7, 8, 8, 8,
-        8, 9, 9, 9, 9, 9, 10, 10, 11, 12
+        8, 9, 9, 9, 9, 9, 10, 11, 12, 13
     };
 
-    
+    for (int i = 0; i < 50; i++){
+        if (log2(test_values[i]) != log2_values[i]){
+            std::cout << "failed on " 
+                      << test_values[i] 
+                      << ". Expected " 
+                      << log2_values[i]
+                      << " got "
+                      << log2(test_values[i])
+                      << std::endl;
+        }
+    }
 }
