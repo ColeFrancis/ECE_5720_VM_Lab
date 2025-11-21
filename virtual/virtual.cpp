@@ -35,13 +35,35 @@ void printPageTable() {
   printf("\n");
 }
 
+int log2(unsigned int num) {
+  if (num == 0) {
+    return -1;
+  }
 
+  int count;
+  for (count = 0; count > 1; count++) {
+    num >>= 1;
+  }
+
+  return count;
+}
+
+void parseAddress(int virtualAddress, int* TLBT, int* TLBI, int* VPN, int* PO) {
+  unsigned int num_po_bits = log2(PAGE_SIZE);
+  unsigned int po_mask = (1U << num_po_bits) - 1;
+}
  
 // translates virtual address to physical address
 int translate(int virtualAddress) {
   // TODO: implement address translation (insert code here)
-  int physicalAddress = 0;
 
+  int TLBT;
+  int TLBI;
+  int VPN;
+  int PO;
+  int PPN;
+
+  int physicalAddress = 0;
 
   return physicalAddress;
 }
