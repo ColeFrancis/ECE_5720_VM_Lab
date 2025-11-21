@@ -48,9 +48,25 @@ int log2(unsigned int num) {
   return count;
 }
 
-void parseAddress(int virtualAddress, int* TLBT, int* TLBI, int* VPN, int* PO) {
+void parseAddress(unsigned int virtualAddress, int* tlbt, int* tlbi, int* vpn, int* po) {
   unsigned int num_po_bits = log2(PAGE_SIZE);
+  unsigned int num_tlbt_bits = log2(TLB_ASSOC);
+  unsigned int num_tlbi_bits = log2(TLB_SIZE/TLB_ASSOC);
+
   unsigned int po_mask = (1U << num_po_bits) - 1;
+  unsigned int tlbt_mask = (1U << num_tlbt_bits) - 1;
+  unsigned int tlbi_mask = (1U << num_tlbi_bits) - 1;
+  unsigned int vpn_mask = (1U << (num_tlbt_bits + num_tlbi_bits)) - 1;
+
+  *po = virtualAddress & po_mask;
+  virtualAddress >>= num_po_bits;
+
+  *vpn = virtualAddress & vpn_mask;
+
+  *tlbi = virtualAddress & tlbi_mask;
+  virtualAddress >>= num_tlbi_bits;
+
+  *tlbt = virtualAddress & tlbt_mask;
 }
  
 // translates virtual address to physical address
