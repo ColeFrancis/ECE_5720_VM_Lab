@@ -40,9 +40,9 @@ int log2(unsigned int num) {
     return -1;
   }
 
-  int count;
-  for (count = 0; count > 1; count++) {
-    num >>= 1;
+  int count = 0;
+  for (; num > 1; num >>= 1) {
+    count++;
   }
 
   return count;
@@ -73,11 +73,15 @@ void parseAddress(unsigned int virtualAddress, int* tlbt, int* tlbi, int* vpn, i
 int translate(int virtualAddress) {
   // TODO: implement address translation (insert code here)
 
-  int TLBT;
-  int TLBI;
-  int VPN;
-  int PO;
-  int PPN;
+  int tlbt;
+  int tlbi;
+  int vpn;
+  int po;
+  int ppn;
+
+  parseAddress((unsigned int)virtualAddress, &tlbt, &tlbi, &vpn, &po);
+
+
 
   int physicalAddress = 0;
 
