@@ -40,9 +40,9 @@ int log2(unsigned int num) {
     return -1;
   }
 
-  int count;
-  for (count = 0; count > 1; count++) {
-    num >>= 1;
+  int count = 0;
+  for (; num > 1; num >>= 1) {
+    count++;
   }
 
   return count;
