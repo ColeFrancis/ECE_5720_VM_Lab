@@ -73,11 +73,15 @@ void parseAddress(unsigned int virtualAddress, int* tlbt, int* tlbi, int* vpn, i
 int translate(int virtualAddress) {
   // TODO: implement address translation (insert code here)
 
-  int TLBT;
-  int TLBI;
-  int VPN;
-  int PO;
-  int PPN;
+  int tlbt;
+  int tlbi;
+  int vpn;
+  int po;
+  int ppn;
+
+  parseAddress((unsigned int)virtualAddress, &tlbt, &tlbi, &vpn, &po);
+
+
 
   int physicalAddress = 0;
 
