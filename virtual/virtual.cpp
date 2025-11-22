@@ -50,8 +50,8 @@ int log2(unsigned int num) {
 
 void parseAddress(unsigned int virtualAddress, int* tlbt, int* tlbi, int* vpn, int* po) {
   unsigned int num_po_bits = log2(PAGE_SIZE);
-  unsigned int num_tlbt_bits = log2(TLB_ASSOC);
   unsigned int num_tlbi_bits = log2(TLB_SIZE/TLB_ASSOC);
+  unsigned int num_tlbt_bits = num_po_bits - num_tlbi_bits;
 
   unsigned int po_mask = (1U << num_po_bits) - 1;
   unsigned int tlbt_mask = (1U << num_tlbt_bits) - 1;
