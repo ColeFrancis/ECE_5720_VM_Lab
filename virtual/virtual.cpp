@@ -1,3 +1,7 @@
+/*
+ * Cole Francis (A02365322)
+ * Justin Hulme (A02427854)
+*/
 
 #include<stdio.h> //printf
 #include<math.h>  //log2
@@ -36,10 +40,12 @@ void printPageTable() {
 }
 
 int log2(unsigned int num) {
+  // edge case
   if (num == 0) {
     return 0;
   }
 
+  // find last '1'
   int count = 0;
   for (; num > 1; num >>= 1) {
     count++;
@@ -49,15 +55,18 @@ int log2(unsigned int num) {
 }
 
 void parseAddress(unsigned int virtualAddress, int* tlbt, int* tlbi, int* vpn, int* po) {
+  // get sizes
   unsigned int num_po_bits = log2(PAGE_SIZE);
   unsigned int num_tlbi_bits = log2(TLB_SIZE/TLB_ASSOC);
   unsigned int num_tlbt_bits = VIRTUAL_WIDTH - num_po_bits - num_tlbi_bits;
 
+  // build sizes
   unsigned int po_mask = (1U << num_po_bits) - 1;
   unsigned int tlbt_mask = (1U << num_tlbt_bits) - 1;
   unsigned int tlbi_mask = (1U << num_tlbi_bits) - 1;
   unsigned int vpn_mask = (1U << (num_tlbt_bits + num_tlbi_bits)) - 1;
 
+  // parse address
   *po = virtualAddress & po_mask;
   virtualAddress >>= num_po_bits;
 
@@ -68,29 +77,25 @@ void parseAddress(unsigned int virtualAddress, int* tlbt, int* tlbi, int* vpn, i
 
   *tlbt = virtualAddress & tlbt_mask;
 }
- 
+
+// joins a page number and a page offset
 inline int concatAddress(int pn, int po) {
   return (pn << (unsigned int)log2(PAGE_SIZE)) | po;
 }
 
 // translates virtual address to physical address
 int translate(int virtualAddress) {
-  // TODO: implement address translation (insert code here)
-
   int tlbt;
   int tlbi;
   int vpn;
   int po;
   int ppn;
 
-  int physicalAddress = 0;
-
   parseAddress((unsigned int)virtualAddress, &tlbt, &tlbi, &vpn, &po);
 
-
-  // TLB
   tlbEntry* tlb_set = tlb[tlbi];
 
+  // check for tag in tlb set
   bool tlb_found = false;
   for (int line = 0; line < TLB_ASSOC; line++) {
     if ((tlb_set[line].tag == tlbt) && (tlb_set[line].valid)) {
@@ -102,21 +107,20 @@ int translate(int virtualAddress) {
 
   if (tlb_found) {
     printf("TLB HIT!\n");
-    physicalAddress = concatAddress(ppn, po); 
   }
   else if (pageTableValid[vpn]) {
     printf("TLB MISS :(\n");
 
     ppn = pageTable[vpn];
-    physicalAddress = concatAddress(ppn, po);
   }
   else {
     printf("PAGE FAULT!\n");
 
+    // end before we print the physical address
     std::exit(0);
   }
   
-  return physicalAddress;
+  return concatAddress(ppn, po);
 }
 
 // main function
