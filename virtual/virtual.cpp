@@ -37,7 +37,7 @@ void printPageTable() {
 
 int log2(unsigned int num) {
   if (num == 0) {
-    return -1;
+    return 0;
   }
 
   int count = 0;
@@ -69,6 +69,10 @@ void parseAddress(unsigned int virtualAddress, int* tlbt, int* tlbi, int* vpn, i
   *tlbt = virtualAddress & tlbt_mask;
 }
  
+inline int concatAddress(int pn, int po) {
+  return (pn << (unsigned int)log2(PAGE_SIZE)) | po;
+}
+
 // translates virtual address to physical address
 int translate(int virtualAddress) {
   // TODO: implement address translation (insert code here)
@@ -79,12 +83,39 @@ int translate(int virtualAddress) {
   int po;
   int ppn;
 
+  int physicalAddress = 0;
+
   parseAddress((unsigned int)virtualAddress, &tlbt, &tlbi, &vpn, &po);
 
 
+  // TLB
+  tlbEntry* tlb_set = tlb[tlbi];
 
-  int physicalAddress = 0;
+  bool tlb_found = false;
+  for (int line = 0; line < TLB_ASSOC; line++) {
+    if ((tlb_set[line].tag == tlbt) && (tlb_set[line].valid)) {
+      tlb_found = true;
+      ppn = tlb_set[line].ppn;
+      break;
+    }
+  }
 
+  if (tlb_found) {
+    printf("TLB HIT!\n");
+    physicalAddress = concatAddress(ppn, po); 
+  }
+  else if (pageTableValid[vpn]) {
+    printf("TLB MISS :(\n");
+
+    ppn = pageTable[vpn];
+    physicalAddress = concatAddress(ppn, po);
+  }
+  else {
+    printf("PAGE FAULT!\n");
+
+    std::exit(0);
+  }
+  
   return physicalAddress;
 }
 
